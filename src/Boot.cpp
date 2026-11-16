@@ -7,6 +7,10 @@
 
 #include <iostream>
 
+#ifdef __amigaos__
+#include "amiga_dir.hpp"
+#endif
+
 extern "C"
 {
 	// bare minimum from Window.c to satisfy externs in game code
@@ -157,6 +161,9 @@ retry:
 
 	// Init gDataSpec
 	const char* executablePath = argc > 0 ? argv[0] : NULL;
+#ifdef __amigaos__
+	executablePath = NULL;		// "Data" in the current directory, the game's drawer
+#endif
 	fs::path dataPath = FindGameData(executablePath);
 
 #if !(OSXPPC)
@@ -188,6 +195,12 @@ int main(int argc, char** argv)
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #else
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
+#endif
+
+#ifdef __amigaos__
+	// Data/ and User/ (preferences) are found relative to the game's own drawer.
+	amiga_enter_progdir();
+	amiga_make_user_dir();
 #endif
 
 	try

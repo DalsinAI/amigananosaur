@@ -1,0 +1,21 @@
+Nanosaur: licences
+==================
+
+The game: Nanosaur, (c) 1998 Pangea Software, Inc., updated by Iliyas
+Jorio, from github.com/jorio/Nanosaur at commit
+a149c77ee196434bbd1e8f2d3762a2320e5d8a42 (version 1.4.4 and later
+fixes, the last on SDL 2), with Pomme (github.com/jorio/Pomme, commit
+1acfd097).
+
+- The game, its code and its data (Data/): Creative Commons
+  Attribution-NonCommercial-ShareAlike 4.0 International (Licence.txt).
+  Free to share and change, not for sale; changes under the same
+  licence. The port's changes to the code (src/, extern/Pomme/) are
+  under it too; the source of this build is in DalsinAI/amigananosaur
+  on GitHub.
+- Pomme: MIT, (c) Iliyas Jorio (extern/Pomme/LICENSE.md in the source).
+- The Amiga port's own files (amiga/, AMIGA_PORT.md, package/, tools/,
+  tests/) are MIT, Copyright (c) 2026 AmiCradle Team. The GlowIcons are
+  drawn from upstream's packaging/Nanosaur.png.
+
+Designed, tested and delivered by The AmiCradle Team.

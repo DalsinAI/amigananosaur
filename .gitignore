@@ -18,3 +18,7 @@ cache/
 # macOS metadata
 .DS_Store
 
+
+# Amiga build
+build/
+__pycache__/

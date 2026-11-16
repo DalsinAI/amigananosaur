@@ -1,0 +1,165 @@
+# Nanosaur for GFOS (AmigaOS 3.2 with GFOpenUp), 68040/68060 + FPU, on
+# GFOpenUp's SDL 2 and OpenGL (LIBS:GFOpenGPU/SDL2.module and GL.module).
+#
+#   make -f amiga/Makefile.amigaos -j4 [STOVE=/path/to/os32-gcc16-open6]
+#
+# STOVE is a GFOpenAmigaGCC 16.2.0-open6 stove: its prefix/ has the
+# compiler, the NDK and GFOpenGPU's SDL 2 and GL kit (prefix/m68k-amigaos).
+# The game asks SDL for a GL 2.0 compatibility context (its fixed-pipeline
+# renderer), as upstream does. Pomme (extern/Pomme) is built as upstream's
+# CMakeLists.txt sets it: no input, no MP3. __BIG_ENDIAN__ tells Pomme and
+# the game that the data's byte order is the CPU's own.
+#
+# Output: build/amigaos/Nanosaur/ (the drawer: Nanosaur, Data/, User/,
+# ReadMe, Controls, the licences, with GlowIcons), build/amigaos/Nanosaur.info
+# and Install-Nanosaur beside them.
+
+STOVE   ?= $(HOME)/AmiCradle/stoves/os32-gcc16-open6
+PREFIX  ?= $(STOVE)/prefix
+KIT     ?= $(PREFIX)/m68k-amigaos
+CC      = $(PREFIX)/bin/m68k-amigaos-gcc
+CXX     = $(PREFIX)/bin/m68k-amigaos-g++
+CPU     ?= -m68040 -m68881
+# -fno-tree-loop-distribute-patterns: GCC 16's loop miscompile (the kit's
+# sdl2-config gives it for GCC 16 too).
+OPT     ?= -O2 -fomit-frame-pointer -fno-tree-loop-distribute-patterns
+
+DEFS    = -D__amigaos__ -D__BIG_ENDIAN__=1 -DNDEBUG -DPOMME_NO_INPUT -DPOMME_NO_MP3 \
+          -DPOMME_CASE_SENSITIVE_FSSPEC=1
+INC     = -Iamiga -Iextern/Pomme/src -Iextern/Pomme/src/QD3D -Isrc/Headers -I$(KIT)/include/SDL2 -I$(KIT)/include
+WARN    = -Wno-multichar -Wno-unknown-pragmas
+CFLAGS  = -noixemul $(OPT) $(CPU) -std=gnu11 -fexceptions $(WARN) $(DEFS) $(INC)
+CXXFLAGS = -noixemul $(OPT) $(CPU) -std=c++20 -fexceptions $(WARN) $(DEFS) $(INC)
+LDFLAGS = -noixemul $(CPU)
+LIBS    = -L$(KIT)/lib -lSDL2 -lGL -lpthread -latomic -lm
+
+BUILD   = build/amigaos
+OBJDIR  = $(BUILD)/obj
+OUT     = $(BUILD)/Nanosaur
+PROG    = Nanosaur
+
+GAME    = src/Boot.cpp \
+          src/Enemies/Enemy.c \
+          src/Enemies/Enemy_Ptera.c \
+          src/Enemies/Enemy_Rex.c \
+          src/Enemies/Enemy_Spitter.c \
+          src/Enemies/Enemy_Stego.c \
+          src/Enemies/Enemy_TriCer.c \
+          src/Items/Effects.c \
+          src/Items/Items.c \
+          src/Items/Pickups.c \
+          src/Items/TimePortal.c \
+          src/Items/Traps.c \
+          src/Items/Triggers.c \
+          src/Player/MyGuy.c \
+          src/Player/Player_Control.c \
+          src/Player/Weapons.c \
+          src/QD3D/3DMF.c \
+          src/QD3D/3DMath.c \
+          src/QD3D/Camera.c \
+          src/QD3D/EnvironmentMap.c \
+          src/QD3D/FrustumCulling.c \
+          src/QD3D/QD3D_Geometry.c \
+          src/QD3D/QD3D_Support.c \
+          src/QD3D/Renderer.c \
+          src/Screens/HighScores.c \
+          src/Screens/Infobar.c \
+          src/Screens/MainMenu.c \
+          src/Screens/Movie.cpp \
+          src/Screens/SettingsScreen.c \
+          src/Screens/Title.c \
+          src/Skeleton/Bones.c \
+          src/Skeleton/SkeletonAnim.c \
+          src/Skeleton/SkeletonJoints.c \
+          src/Skeleton/SkeletonObj.c \
+          src/System/Collision.c \
+          src/System/File.c \
+          src/System/Main.c \
+          src/System/Misc.c \
+          src/System/Objects.c \
+          src/System/Objects2.c \
+          src/System/Pool.c \
+          src/System/ProMode.c \
+          src/System/Sound.c \
+          src/System/Sprites.c \
+          src/System/TGA.c \
+          src/System/Window.c \
+          src/System/input.c \
+          src/Terrain/Terrain.c \
+          src/Terrain/Terrain2.c
+POMME   = extern/Pomme/src/Files/Files.cpp \
+          extern/Pomme/src/Files/HostVolume.cpp \
+          extern/Pomme/src/Files/Resources.cpp \
+          extern/Pomme/src/Graphics/ARGBPixmap.cpp \
+          extern/Pomme/src/Graphics/Color.cpp \
+          extern/Pomme/src/Graphics/ColorManager.cpp \
+          extern/Pomme/src/Graphics/Graphics.cpp \
+          extern/Pomme/src/Graphics/Icons.cpp \
+          extern/Pomme/src/Graphics/PICT.cpp \
+          extern/Pomme/src/Graphics/SystemPalettes.cpp \
+          extern/Pomme/src/Memory/Memory.cpp \
+          extern/Pomme/src/Pomme.cpp \
+          extern/Pomme/src/PommeDebug.cpp \
+          extern/Pomme/src/QD3D/3DMFParser.cpp \
+          extern/Pomme/src/QD3D/QD3D.cpp \
+          extern/Pomme/src/QD3D/QD3DMath.cpp \
+          extern/Pomme/src/SoundFormats/AIFF.cpp \
+          extern/Pomme/src/SoundFormats/IMA4.cpp \
+          extern/Pomme/src/SoundFormats/MACE.cpp \
+          extern/Pomme/src/SoundFormats/Midi.cpp \
+          extern/Pomme/src/SoundFormats/SoundFormats.cpp \
+          extern/Pomme/src/SoundFormats/xlaw.cpp \
+          extern/Pomme/src/SoundMixer/ChannelImpl.cpp \
+          extern/Pomme/src/SoundMixer/SoundManager.cpp \
+          extern/Pomme/src/SoundMixer/cmixer.cpp \
+          extern/Pomme/src/Text/TextUtilities.cpp \
+          extern/Pomme/src/Time/TimeManager.cpp \
+          extern/Pomme/src/Utilities/IEEEExtended.cpp \
+          extern/Pomme/src/Utilities/StringUtils.cpp \
+          extern/Pomme/src/Utilities/bigendianstreams.cpp \
+          extern/Pomme/src/Utilities/memstream.cpp \
+          extern/Pomme/src/Utilities/structpack.cpp \
+          extern/Pomme/src/Video/Cinepak.cpp \
+          extern/Pomme/src/Video/moov.cpp
+AMIGA   = amiga/amiga_dir.cpp \
+          amiga/amiga_start.cpp \
+          amiga/fs_space.cpp
+SRC     = $(GAME) $(POMME) $(AMIGA)
+OBJS    = $(addprefix $(OBJDIR)/,$(addsuffix .o,$(basename $(SRC))))
+
+all: $(OUT)/$(PROG) package
+
+$(OUT)/$(PROG): $(OBJS)
+	@mkdir -p $(OUT)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+
+package: $(OUT)/$(PROG) AMIGA_PORT.md amiga/Licences.txt amiga/Controls
+	mkdir -p $(OUT)/User
+	rm -rf $(OUT)/Data
+	cp -R Data $(OUT)/Data
+	cp amiga/Controls $(OUT)/Controls
+	cp AMIGA_PORT.md $(OUT)/ReadMe
+	cp LICENSE.md $(OUT)/Licence.txt
+	cp amiga/Licences.txt $(OUT)/Licences.txt
+	cp amiga/icons/Nanosaur.info amiga/icons/ReadMe.info $(OUT)/
+	for f in Licence.txt Licences.txt Controls; do \
+	    cp amiga/icons/ReadMe.info $(OUT)/$$f.info; done
+	cp amiga/icons/Data.info $(OUT)/User.info
+	cp amiga/icons/Data.info $(OUT)/Data.info
+	cp amiga/icons/Nanosaur-drawer.info $(BUILD)/Nanosaur.info
+	cp amiga/Install-Nanosaur amiga/Install-Nanosaur.info $(BUILD)/
+
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJDIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+objs: $(OBJS)
+
+clean:
+	rm -rf $(BUILD)
+
+.PHONY: all package objs clean

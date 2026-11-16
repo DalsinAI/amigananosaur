@@ -1,0 +1,23 @@
+Nanosaur: controls
+==================
+
+The keys as the game sets them the first time (Settings, then Configure
+keyboard, changes them; they are kept in the drawer's User drawer).
+
+  Cursor keys          run forward and back, turn
+  Space                fire
+  Alt                  jump (press again in the air for the jet pack)
+  A and Z              jet pack up and down
+  Ctrl                 pick up
+  Left Shift or ]      next weapon
+  Right Shift or [     previous weapon
+  Tab                  camera mode
+  , and .              turn the camera
+  1 and 2              zoom out and in
+  G                    the map (GPS)
+  M                    music on and off
+  B                    ambient sound on and off
+  Esc                  pause and the menu
+
+The menu: cursor keys and Return, Esc goes back. A mouse (left button
+fires), a joystick or a gamepad works too.

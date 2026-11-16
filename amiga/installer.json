@@ -1,0 +1,14 @@
+{
+  "name": "Nanosaur",
+  "version": "1.4.4-gfos1",
+  "drawer": "Nanosaur",
+  "program": "Nanosaur",
+  "cpu": "68040",
+  "fpu": true,
+  "space": 30000000,
+  "modules": ["SDL2.module", "GL.module"],
+  "keep": ["User"],
+  "parent": "Work:Games",
+  "badge": "icons/art/nanosaur.png",
+  "script": "Install-Nanosaur"
+}

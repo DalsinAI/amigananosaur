@@ -175,6 +175,10 @@ OSErr FindFolder(short vRefNum, OSType folderType, Boolean createFolder, short* 
 	{
 #ifdef _WIN32
 		path = Pomme::Platform::Windows::GetPreferencesFolder();
+#elif defined(__amigaos__)
+		// AmigaOS: preferences live in the game drawer's User directory (the
+		// game has made its drawer the current directory).
+		path = fs::current_path() / "User";
 #elif defined(__APPLE__)
 		const char *home = getenv("HOME");
 		if (!home)
